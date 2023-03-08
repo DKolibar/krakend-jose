@@ -124,6 +124,11 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 			logger.Debug(logPrefix, "Validator enabled for this endpoint")
 		}
 
+		if len(scfg.CustomFieldsEquals) > 0 {
+			logger.Debug(logPrefix, "Custom field equality check enabled")
+			logger.Debug(logPrefix, scfg.CustomFieldsEquals)
+		}
+
 		paramExtractor := extractRequiredJWTClaims(cfg)
 
 		return func(c *gin.Context) {
