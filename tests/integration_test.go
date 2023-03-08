@@ -62,7 +62,7 @@ func TestJoseMw(t *testing.T) {
 			},
 		},
 		ExtraConfig: map[string]interface{}{
-			"auth/signer": map[string]interface{}{
+			"github.com/DKolibar/krakend-jose/signer": map[string]interface{}{
 				"alg":                  "RS256",
 				"kid":                  "2011-04-29",
 				"keys-to-sign":         []interface{}{"access_token", "refresh_token"},
