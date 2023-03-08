@@ -130,8 +130,8 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 		//	"roles": "http://api.example.com",
 		//}
 
-		if len(scfg.CustomFieldsEquals) > 0 {
-			logger.Debug(logPrefix, "Custom field equality check enabled", scfg.CustomFieldsEquals)
+		if len(scfg.ReqClaimFieldsEquals) > 0 {
+			logger.Debug(logPrefix, "Claim fields equality check enabled", scfg.ReqClaimFieldsEquals)
 		}
 
 		customFieldsMatcher = krakendjose.CustomFieldsMatcher
@@ -190,7 +190,7 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 				return
 			}
 
-			if !customFieldsMatcher(claims, scfg.CustomFieldsEquals) {
+			if !customFieldsMatcher(claims, scfg.ReqClaimFieldsEquals) {
 				if scfg.OperationDebug {
 					logger.Error(logPrefix, "Token sent by client does not have the required custom fields")
 				}

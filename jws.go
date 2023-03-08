@@ -28,7 +28,7 @@ type SignatureConfig struct {
 	PropagateClaimsToHeader [][]string        `json:"propagate_claims,omitempty"`
 	RolesKey                string            `json:"roles_key,omitempty"`
 	RolesKeyIsNested        bool              `json:"roles_key_is_nested,omitempty"`
-	CustomFieldsEquals      map[string]string `json:"custom_fields_equals,omitempty"`
+	ReqClaimFieldsEquals    map[string]string `json:"req_claim_fields_equals,omitempty"`
 	CookieKey               string            `json:"cookie_key,omitempty"`
 	CipherSuites            []uint16          `json:"cipher_suites,omitempty"`
 	DisableJWKSecurity      bool              `json:"disable_jwk_security"`
