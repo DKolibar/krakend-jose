@@ -126,6 +126,10 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 
 		var customFieldsMatcher func(map[string]interface{}, map[string]string) bool
 
+		//scfg.CustomFieldsEquals = map[string]string{
+		//	"roles": "http://api.example.com",
+		//}
+
 		if len(scfg.CustomFieldsEquals) > 0 {
 			logger.Debug(logPrefix, "Custom field equality check enabled", scfg.CustomFieldsEquals)
 		}

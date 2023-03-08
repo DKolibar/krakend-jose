@@ -84,23 +84,24 @@ func CanAccessNested(roleKey string, claims map[string]interface{}, required []s
 
 func CustomFieldsMatcher(claims map[string]interface{}, wantedFields map[string]string) bool {
 	if len(wantedFields) == 0 {
+		println("vraciam sa")
 		return true
 	}
 
-	var matched = false
+	fmt.Println(claims)
+
+	var matched = 0
 
 	for wantedKey, wantedValue := range wantedFields {
 		for key, value := range claims {
 			if key == wantedKey && reflect.TypeOf(value).Kind() == reflect.String && value.(string) == wantedValue {
-				matched = true
+				matched++
 				break
-			} else {
-				return false
 			}
 		}
 	}
 
-	return matched
+	return matched == len(wantedFields)
 }
 
 func CanAccess(roleKey string, claims map[string]interface{}, required []string) bool {
