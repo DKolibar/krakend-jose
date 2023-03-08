@@ -9,9 +9,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	krakendjose "github.com/DKolibar/krakend-jose/v2"
+	jose "github.com/DKolibar/krakend-jose/v2/gin"
 	"github.com/gin-gonic/gin"
-	krakendjose "github.com/krakendio/krakend-jose/v2"
-	jose "github.com/krakendio/krakend-jose/v2/gin"
 	"github.com/luraproject/lura/v2/config"
 	"github.com/luraproject/lura/v2/logging"
 	"github.com/luraproject/lura/v2/proxy"
@@ -62,7 +62,7 @@ func TestJoseMw(t *testing.T) {
 			},
 		},
 		ExtraConfig: map[string]interface{}{
-			"github.com/devopsfaith/krakend-jose/signer": map[string]interface{}{
+			"auth/signer": map[string]interface{}{
 				"alg":                  "RS256",
 				"kid":                  "2011-04-29",
 				"keys-to-sign":         []interface{}{"access_token", "refresh_token"},

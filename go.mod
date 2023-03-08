@@ -1,4 +1,4 @@
-module github.com/krakendio/krakend-jose/v2
+module github.com/DKolibar/krakend-jose/v2
 
 go 1.17
 

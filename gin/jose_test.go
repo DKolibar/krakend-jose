@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
+	jose "github.com/DKolibar/krakend-jose/v2"
 	"github.com/gin-gonic/gin"
-	jose "github.com/krakendio/krakend-jose/v2"
 	"github.com/luraproject/lura/v2/config"
 	"github.com/luraproject/lura/v2/logging"
 	"github.com/luraproject/lura/v2/proxy"

@@ -22,7 +22,7 @@ import (
 	"github.com/luraproject/lura/v2/core"
 	jose "gopkg.in/square/go-jose.v2"
 
-	"github.com/krakendio/krakend-jose/v2/secrets"
+	"github.com/DKolibar/krakend-jose/v2/secrets"
 )
 
 type SecretProviderConfig struct {
