@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"reflect"
 	"strings"
 
 	"github.com/auth0-community/go-auth0"
@@ -79,6 +80,27 @@ func CanAccessNested(roleKey string, claims map[string]interface{}, required []s
 		}
 	}
 	return CanAccess(keys[len(keys)-1], tmp, required)
+}
+
+func CustomFieldsMatcher(claims map[string]interface{}, wantedFields map[string]string) bool {
+	if len(wantedFields) == 0 {
+		return true
+	}
+
+	var matched = false
+
+	for wantedKey, wantedValue := range wantedFields {
+		for key, value := range claims {
+			if key == wantedKey && reflect.TypeOf(value).Kind() == reflect.String && value.(string) == wantedValue {
+				matched = true
+				break
+			} else {
+				return false
+			}
+		}
+	}
+
+	return matched
 }
 
 func CanAccess(roleKey string, claims map[string]interface{}, required []string) bool {

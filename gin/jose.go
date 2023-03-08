@@ -124,10 +124,13 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 			logger.Debug(logPrefix, "Validator enabled for this endpoint")
 		}
 
+		var customFieldsMatcher func(map[string]interface{}, map[string]string) bool
+
 		if len(scfg.CustomFieldsEquals) > 0 {
-			logger.Debug(logPrefix, "Custom field equality check enabled")
-			logger.Debug(logPrefix, scfg.CustomFieldsEquals)
+			logger.Debug(logPrefix, "Custom field equality check enabled", scfg.CustomFieldsEquals)
 		}
+
+		customFieldsMatcher = krakendjose.CustomFieldsMatcher
 
 		paramExtractor := extractRequiredJWTClaims(cfg)
 
@@ -170,6 +173,22 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 			if !scopesMatcher(scfg.ScopesKey, claims, scfg.Scopes) {
 				if scfg.OperationDebug {
 					logger.Error(logPrefix, "Token sent by client does not have the required scopes")
+				}
+				c.AbortWithStatus(http.StatusForbidden)
+				return
+			}
+
+			if !scopesMatcher(scfg.ScopesKey, claims, scfg.Scopes) {
+				if scfg.OperationDebug {
+					logger.Error(logPrefix, "Token sent by client does not have the required scopes")
+				}
+				c.AbortWithStatus(http.StatusForbidden)
+				return
+			}
+
+			if !customFieldsMatcher(claims, scfg.CustomFieldsEquals) {
+				if scfg.OperationDebug {
+					logger.Error(logPrefix, "Token sent by client does not have the required custom fields")
 				}
 				c.AbortWithStatus(http.StatusForbidden)
 				return
