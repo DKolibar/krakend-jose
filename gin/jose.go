@@ -137,7 +137,7 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 
 		customFieldsMatcher = krakendjose.CustomFieldsMatcher
 
-		if len(scfg.PropagateIssAsTenantId) > 0 {
+		if len(scfg.PropagateIssAsTenantId) >= 2 && len(scfg.PropagateIssAsTenantId[0]) > 0 && len(scfg.PropagateIssAsTenantId[1]) > 0 {
 			logger.Debug(logPrefix, fmt.Sprintf("'iss' claim field will be returned as '%s' header for this endpoint", scfg.PropagateIssAsTenantId[0]))
 		}
 
@@ -205,7 +205,7 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 
 			propagateHeaders(cfg, scfg.PropagateClaimsToHeader, claims, c, logger)
 
-			addIssHeader(c, claims, scfg.PropagateIssAsTenantId[0], scfg.PropagateIssAsTenantId[1])
+			addIssHeader(c, claims, scfg.PropagateIssAsTenantId)
 
 			paramExtractor(c, claims)
 
@@ -220,10 +220,13 @@ func erroredHandler(c *gin.Context) {
 
 var issClaimAsHeaderPattern = regexp.MustCompile(`[^a-zA-Z]+`)
 
-func addIssHeader(c *gin.Context, claims map[string]interface{}, targetHeader string, customFormat string) {
-	if len(targetHeader) == 0 {
+func addIssHeader(c *gin.Context, claims map[string]interface{}, settings []string) {
+	if len(settings) < 2 || len(settings[0]) == 0 || len(settings[1]) == 0 {
 		return
 	}
+
+	var targetHeader = settings[0]
+	var customFormat = settings[1]
 
 	if _, ok := claims["iss"]; !ok { //check if iss claim exists
 		return
