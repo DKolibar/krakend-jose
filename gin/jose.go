@@ -138,7 +138,7 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 		customFieldsMatcher = krakendjose.CustomFieldsMatcher
 
 		if len(scfg.PropagateIssAsTenantId) > 0 {
-			logger.Debug(logPrefix, "'iss' claim field will be returned as '%s' header for this endpoint", scfg.PropagateIssAsTenantId)
+			logger.Debug(logPrefix, fmt.Sprintf("'iss' claim field will be returned as '%s' header for this endpoint", scfg.PropagateIssAsTenantId))
 		}
 
 		paramExtractor := extractRequiredJWTClaims(cfg)
