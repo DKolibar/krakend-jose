@@ -138,7 +138,7 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 		customFieldsMatcher = krakendjose.CustomFieldsMatcher
 
 		if len(scfg.PropagateIssAsTenantId) > 0 {
-			logger.Debug(logPrefix, fmt.Sprintf("'iss' claim field will be returned as '%s' header for this endpoint", scfg.PropagateIssAsTenantId))
+			logger.Debug(logPrefix, fmt.Sprintf("'iss' claim field will be returned as '%s' header for this endpoint", scfg.PropagateIssAsTenantId[0]))
 		}
 
 		paramExtractor := extractRequiredJWTClaims(cfg)
@@ -205,7 +205,7 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 
 			propagateHeaders(cfg, scfg.PropagateClaimsToHeader, claims, c, logger)
 
-			addIssHeader(c, claims, scfg.PropagateIssAsTenantId)
+			addIssHeader(c, claims, scfg.PropagateIssAsTenantId[0], scfg.PropagateIssAsTenantId[1])
 
 			paramExtractor(c, claims)
 
@@ -220,7 +220,7 @@ func erroredHandler(c *gin.Context) {
 
 var issClaimAsHeaderPattern = regexp.MustCompile(`[^a-zA-Z]+`)
 
-func addIssHeader(c *gin.Context, claims map[string]interface{}, targetHeader string) {
+func addIssHeader(c *gin.Context, claims map[string]interface{}, targetHeader string, customFormat string) {
 	if len(targetHeader) == 0 {
 		return
 	}
@@ -244,7 +244,7 @@ func addIssHeader(c *gin.Context, claims map[string]interface{}, targetHeader st
 	// Remove all non-alphabetic characters
 	issValue = issClaimAsHeaderPattern.ReplaceAllString(issValue, "")
 
-	c.Request.Header.Set(targetHeader, issValue)
+	c.Request.Header.Set(targetHeader, fmt.Sprintf(customFormat, issValue))
 }
 
 func propagateHeaders(cfg *config.EndpointConfig, propagationCfg [][]string, claims map[string]interface{}, c *gin.Context, logger logging.Logger) {
