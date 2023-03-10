@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"reflect"
 	"regexp"
 	"strings"
 
@@ -131,10 +132,14 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 		//}
 
 		if len(scfg.ReqClaimFieldsEquals) > 0 {
-			logger.Debug(logPrefix, "Claim fields equality check enabled", scfg.ReqClaimFieldsEquals)
+			logger.Debug(logPrefix, "Claim fields equality check will be used for this endpoint", scfg.ReqClaimFieldsEquals)
 		}
 
 		customFieldsMatcher = krakendjose.CustomFieldsMatcher
+
+		if len(scfg.PropagateIssAsTenantId) > 0 {
+			logger.Debug(logPrefix, "'iss' claim field will be returned as '%s' header for this endpoint", scfg.PropagateIssAsTenantId)
+		}
 
 		paramExtractor := extractRequiredJWTClaims(cfg)
 
@@ -200,6 +205,8 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 
 			propagateHeaders(cfg, scfg.PropagateClaimsToHeader, claims, c, logger)
 
+			addIssHeader(c, claims, scfg.PropagateIssAsTenantId)
+
 			paramExtractor(c, claims)
 
 			handler(c)
@@ -209,6 +216,35 @@ func TokenSignatureValidator(hf ginlura.HandlerFactory, logger logging.Logger, r
 
 func erroredHandler(c *gin.Context) {
 	c.AbortWithStatus(http.StatusUnauthorized)
+}
+
+var issClaimAsHeaderPattern = regexp.MustCompile(`[^a-zA-Z]+`)
+
+func addIssHeader(c *gin.Context, claims map[string]interface{}, targetHeader string) {
+	if len(targetHeader) == 0 {
+		return
+	}
+
+	if _, ok := claims["iss"]; !ok { //check if iss claim exists
+		return
+	}
+
+	if reflect.TypeOf(claims["iss"]).Kind() != reflect.String || len(claims["iss"].(string)) == 0 { //check if it is string and not of length 0
+		return
+	}
+
+	var issValue = claims["iss"].(string)
+
+	// Remove any "https://" prefix
+	issValue = strings.TrimPrefix(issValue, "https://")
+
+	// Remove any "http://" prefix
+	issValue = strings.TrimPrefix(issValue, "http://")
+
+	// Remove all non-alphabetic characters
+	issValue = issClaimAsHeaderPattern.ReplaceAllString(issValue, "")
+
+	c.Request.Header.Set(targetHeader, issValue)
 }
 
 func propagateHeaders(cfg *config.EndpointConfig, propagationCfg [][]string, claims map[string]interface{}, c *gin.Context, logger logging.Logger) {

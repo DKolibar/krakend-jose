@@ -26,6 +26,7 @@ type SignatureConfig struct {
 	Audience                []string          `json:"audience,omitempty"`
 	Roles                   []string          `json:"roles,omitempty"`
 	PropagateClaimsToHeader [][]string        `json:"propagate_claims,omitempty"`
+	PropagateIssAsTenantId  string            `json:"propagate_iss_as_tenant_id,omitempty"`
 	RolesKey                string            `json:"roles_key,omitempty"`
 	RolesKeyIsNested        bool              `json:"roles_key_is_nested,omitempty"`
 	ReqClaimFieldsEquals    map[string]string `json:"req_claim_fields_equals,omitempty"`
