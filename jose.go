@@ -1,11 +1,14 @@
 package jose
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"math"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/auth0-community/go-auth0"
@@ -302,9 +305,16 @@ func CalculateHeadersToPropagate(propagationCfg [][]string, claims map[string]in
 
 	c := Claims(claims)
 
-	for _, tuple := range propagationCfg {
-		fromClaim := tuple[0]
-		toHeader := tuple[1]
+	for _, triple := range propagationCfg {
+		fromClaim := triple[0]
+		toHeader := triple[1]
+		hashValue := false
+		if len(triple) > 2 {
+			boolValue, err := strconv.ParseBool(triple[2])
+			if err == nil {
+				hashValue = boolValue
+			}
+		}
 
 		if strings.Contains(fromClaim, ".") && (len(fromClaim) < 4 || fromClaim[:4] != "http") {
 			tmpKey, tmpClaims := getNestedClaim(fromClaim, claims)
@@ -313,6 +323,12 @@ func CalculateHeadersToPropagate(propagationCfg [][]string, claims map[string]in
 			if !ok {
 				continue
 			}
+
+			if hashValue {
+				h := sha1.New()
+				h.Write([]byte(tmp))
+				tmp = hex.EncodeToString(h.Sum(nil))
+			}
 			propagated[toHeader] = tmp
 			continue
 		}
@@ -320,6 +336,11 @@ func CalculateHeadersToPropagate(propagationCfg [][]string, claims map[string]in
 		v, ok := c.Get(fromClaim)
 		if !ok {
 			continue
+		}
+		if hashValue {
+			h := sha1.New()
+			h.Write([]byte(v))
+			v = hex.EncodeToString(h.Sum(nil))
 		}
 		propagated[toHeader] = v
 	}

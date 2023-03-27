@@ -313,7 +313,7 @@ func TestCalculateHeadersToPropagate(t *testing.T) {
 		expected map[string]string
 	}{
 		{
-			cfg: [][]string{{"a", "x-a"}, {"b", "x-b"}, {"c", "x-c"}, {"d.d", "x-d"}, {"d.d.c", "x-e"}},
+			cfg: [][]string{{"a", "x-a", "true"}, {"b", "x-b"}, {"c", "x-c"}, {"d.d", "x-d"}, {"d.d.c", "x-e"}},
 			claims: map[string]interface{}{
 				"a": 1,
 				"b": "foo",
@@ -329,7 +329,7 @@ func TestCalculateHeadersToPropagate(t *testing.T) {
 					},
 				},
 			},
-			expected: map[string]string{"x-a": "1", "x-b": "foo", "x-c": "one,two", "x-d": `{"a":1,"b":"foo","c":["one","two"]}`, "x-e": "one,two"},
+			expected: map[string]string{"x-a": "356a192b7913b04c54574d18c28d46e6395428ab", "x-b": "foo", "x-c": "one,two", "x-d": `{"a":1,"b":"foo","c":["one","two"]}`, "x-e": "one,two"},
 		},
 	} {
 		res, err := CalculateHeadersToPropagate(tc.cfg, tc.claims)
