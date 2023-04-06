@@ -92,11 +92,26 @@ func CustomFieldsMatcher(claims map[string]interface{}, wantedFields map[string]
 
 	var matched = 0
 
-	for wantedKey, wantedValue := range wantedFields {
+	for wantedKey, possibleWantedValues := range wantedFields {
+
+		wantedValues := strings.Split(possibleWantedValues, "|")
+
 		for key, value := range claims {
-			if key == wantedKey && reflect.TypeOf(value).Kind() == reflect.String && value.(string) == wantedValue {
-				matched++
-				break
+			if key == wantedKey && reflect.TypeOf(value).Kind() == reflect.String {
+				valueAsString := value.(string)
+
+				foundPossibility := false
+				for _, wantedValue := range wantedValues {
+					if valueAsString == wantedValue {
+						foundPossibility = true
+						break
+					}
+				}
+
+				if foundPossibility {
+					matched++
+					break
+				}
 			}
 		}
 	}
